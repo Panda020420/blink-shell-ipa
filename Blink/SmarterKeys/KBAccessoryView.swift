@@ -76,14 +76,10 @@ class KBAccessoryView: UIInputView {
   }
   
   @available(iOS 26.0, *)
-  private func _createGlassEffect() -> UIGlassEffect {
-    let glassEffect = UIGlassEffect()
-    glassEffect.isInteractive = true
-    
-    glassEffect.tintColor = .systemFill
-    
-    return glassEffect
-  }
+private func _createGlassEffect() -> UIBlurEffect {
+    // 使用 iOS 标准的毛玻璃效果
+    return UIBlurEffect(style: .systemMaterial)
+}
   
 //  Commented because I think we can go with a general system setting for now.
 //  Update effect based on keyboard settings.
@@ -133,10 +129,13 @@ class KBAccessoryView: UIInputView {
       glassEffectView.bottomAnchor.constraint(equalTo: bottomAnchor)
     ])
     
-    UIView.animate {
-      glassEffectView.cornerConfiguration = .capsule(maximumRadius: 16)
-      glassEffectView.effect = glassEffect
-    }
+
+glassEffectView.layer.cornerRadius = 16
+glassEffectView.layer.masksToBounds = true
+if #available(iOS 13.0, *) {
+    glassEffectView.layer.cornerCurve = .continuous
+}
+    
   }
   
   override var intrinsicContentSize: CGSize {
