@@ -14,11 +14,18 @@ jobs:
         with:
           submodules: recursive
 
-      - name: switch xcode
+      - name: Select Xcode Version
         run: |
-          # 切换至 Xcode 16.0（支持工程文件格式 70）
-          sudo xcode-select -s '/Applications/Xcode_16.0.app/Contents/Developer'
-          xcodebuild -version
+          # 自动寻找以 Xcode_16 开头的目录路径
+          XCODE_PATH=$(find /Applications -maxdepth 1 -name "Xcode_16*.app" | head -n 1)
+          if [ -z "$XCODE_PATH" ]; then
+            echo "未找到 Xcode 16，使用系统默认 Xcode"
+            xcodebuild -version
+          else
+            echo "找到 Xcode 路径: $XCODE_PATH"
+            sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+            xcodebuild -version
+          fi
 
       - name: use cache
         id: cache
